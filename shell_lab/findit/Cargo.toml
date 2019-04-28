@@ -1,0 +1,7 @@
+[package]
+name = "findit"
+version = "0.1.0"
+authors = ["lx"]
+edition = "2018"
+
+[dependencies]
