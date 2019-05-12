@@ -1,5 +1,5 @@
-#ifndef __ERR_UTILS_H__
-#define __ERR_UTILS_H__
+#ifndef __W_ERROR_H__
+#define __W_ERROR_H__
 
 #include <errno.h>
 #include <netdb.h>
