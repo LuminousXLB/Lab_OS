@@ -15,26 +15,8 @@ struct msgtype {
     int text;
 };
 
-void sigchld_hdlr(int signo)
-{
-    int status, pid;
-    while ((pid = waitpid(-1, &status, 0)) > 0) {
-        if (WIFEXITED(status)) {
-            printf("%d exit status %d\n", pid, WEXITSTATUS(status));
-        } else if (WIFSIGNALED(status)) {
-            printf("%d terminate sinal %d\n", pid, WTERMSIG(status));
-        } else if (WIFSTOPPED(status)) {
-            printf("%d stop sinal %d\n", pid, WSTOPSIG(status));
-        } else if (WIFCONTINUED(status)) {
-            printf("%d continue\n", pid);
-        }
-    }
-}
-
 int main()
 {
-    signal(SIGCHLD, sigchld_hdlr);
-    perror("signal");
 
     if (fork() > 0) {
         // parent
