@@ -83,8 +83,7 @@ int open_clientfd(char* hostname, char* port)
     int rc;
     struct addrinfo* listp;
     if ((rc = getaddrinfo(hostname, port, &hints, &listp)) != 0) {
-        fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port,
-            gai_strerror(rc));
+        fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port, gai_strerror(rc));
         return -2;
     }
 
