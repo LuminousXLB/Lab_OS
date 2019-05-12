@@ -10,9 +10,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-/* Unix-style error */
-void unix_error(char *msg) ;
-
 /* Semaphore */
 union semun {
     int val; /* Value for SETVAL */

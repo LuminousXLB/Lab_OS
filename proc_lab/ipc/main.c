@@ -1,7 +1,7 @@
 #include <stdlib.h>
-#include <time.h>
-#include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "w_semaphore.h"
@@ -27,17 +27,17 @@ int main()
     initAllocator(&spc_status);
 
     int i;
-    for (i = 0; i < 8; i++) {
+    int times;
+    for (i = 0; i < 4; i++) {
         sleep(rand() % 5);
         if (fork() == 0) {
             /* Child Process */
             srand(time(NULL));
 
             pid_t pid = getpid();
-            int times = rand() % 4;
 
-            for (times; times >= 0; times--) {
-                int sec = rand() % 20;
+            for (times = 1 + rand() % 3; times >= 0; times--) {
+                int sec = rand() % 16;
                 int servant_id = allocResource(&spc_status);
                 printf("%d | servant %d: got, sleep %d seconds. \n", pid, servant_id, sec);
 
@@ -64,7 +64,7 @@ void initAllocator(struct PCStatus* spc)
     /* Create shared memory segmenation */
     int shmid = shmget(SHMKEY, sizeof(bool) * RESOURCE_COUNT, IPC_CREAT | 0666);
     if (shmid < 0) {
-        unix_error("shmget");
+        perror("shmget");
     }
 
     /* 创建两个信号灯,初值为1 */
@@ -89,6 +89,13 @@ int allocResource(struct PCStatus* spc)
         }
     }
     spc->status[i] = false;
+
+    printf("%s\t", __FUNCTION__);
+    for (i = 0; i < RESOURCE_COUNT; i++) {
+        printf("%d ", spc->status[i]);
+    }
+    printf("\n");
+
     semSignal(spc->mutex);
     return i;
 }
@@ -98,5 +105,12 @@ void freeResource(struct PCStatus* spc, int i)
     semWait(spc->mutex);
     semSignal(spc->mutex);
     spc->status[i] = true;
+
+    printf("%s\t", __FUNCTION__);
+    for (i = 0; i < RESOURCE_COUNT; i++) {
+        printf("%d ", spc->status[i]);
+    }
+    printf("\n");
+
     semSignal(spc->available);
 }
