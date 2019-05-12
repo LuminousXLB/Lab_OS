@@ -2,12 +2,12 @@
 #include "w_signal.h"
 #include "w_socket.h"
 
-/* SIGCHLD handler */
+// SIGCHLD handler
 void sigchld_handler(int sig)
 {
+    // continously reap terminated child until there's no zombie
     while (waitpid(-1, 0, WNOHANG) > 0)
         ;
-    return;
 }
 
 int main(int argc, char** argv)
@@ -17,13 +17,16 @@ int main(int argc, char** argv)
         exit(0);
     }
 
+    // set SIGCHLD handler
     Signal(SIGCHLD, sigchld_handler);
 
+    // open listen file descriptor
     int listenfd = Open_listenfd(argv[1]);
+
+    // waiting for connection request
     int connfd;
     socklen_t clientlen;
     struct sockaddr_storage clientaddr;
-
     while (1) {
         clientlen = sizeof(struct sockaddr_storage);
         connfd = Accept(listenfd, (SA*)&clientaddr, &clientlen);

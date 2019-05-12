@@ -1,4 +1,5 @@
 #include "w_socket.h"
+#define MAXLINE 8192
 
 char* Fgets(char* ptr, int n, FILE* stream)
 {

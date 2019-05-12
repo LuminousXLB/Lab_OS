@@ -1,11 +1,11 @@
 #ifndef __RIO_H__
 #define __RIO_H__
 
-#include "config.h"
-#include "w_error.h"
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include "w_error.h"
 
 /* Persistent state for the robust I/O (Rio) package */
 /* $begin rio_t */

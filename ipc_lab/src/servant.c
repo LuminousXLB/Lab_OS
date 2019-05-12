@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define MAXLINE 8192
+
 pid_t pid;
 
 char* timestring()
@@ -29,8 +31,10 @@ void echo(int connfd)
 
 int main(int argc, char const* argv[])
 {
+    // set random seed
     srand(time(NULL));
 
+    // get current process seed
     pid = getpid();
     printf("[%s] %d: Servant Startup\n", timestring(), (int)pid);
     printf("[%s] %d: %s connect to me\n", timestring(), (int)pid, argv[2]);
