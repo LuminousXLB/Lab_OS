@@ -17,13 +17,13 @@ int main(int argc, char** argv)
         exit(0);
     }
 
-    // set SIGCHLD handler
+    /* Set SIGCHLD handler */
     Signal(SIGCHLD, sigchld_handler);
 
-    // open listen file descriptor
+    /* Open listen file descriptor */
     int listenfd = Open_listenfd(argv[1]);
 
-    // waiting for connection request
+    /* Waiting for connection request */
     int connfd;
     socklen_t clientlen;
     struct sockaddr_storage clientaddr;
@@ -35,17 +35,19 @@ int main(int argc, char** argv)
             /* Child closes its listening socket */
             Close(listenfd);
 
+            /* Extract client socket address */
             struct sockaddr_in* sin = (struct sockaddr_in*)&clientaddr;
             char* ip = inet_ntoa(sin->sin_addr);
-
-            char executable[] = "./servant";
-            char fd_info[6] = { '\0' };
-            char addr_info[24] = { '\0' };
-            sprintf(fd_info, "%d", connfd);
+            char addr_info[24];
             sprintf(addr_info, "%s:%u", ip, sin->sin_port);
 
+            /* Build args array */
+            char executable[] = "./servant";
+            char fd_info[6];
+            sprintf(fd_info, "%d", connfd);
             char* args[4] = { executable, fd_info, addr_info, NULL };
 
+            /* Execut servant process */
             Execve(args[0], args, environ);
         } else {
             /* Parent closes connected socket (important!) */
