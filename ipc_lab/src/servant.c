@@ -15,6 +15,9 @@ char* timestring()
     return ts;
 }
 
+/*
+ * echo - read and echo text lines until client closes connection
+ */
 void echo(int connfd)
 {
     rio_t rio;
@@ -31,19 +34,26 @@ void echo(int connfd)
 
 int main(int argc, char const* argv[])
 {
-    // set random seed
+    /* set random seed */
     srand(time(NULL));
 
-    // get current process seed
+    /* get current process id */
     pid = getpid();
-    printf("[%s] %d: Servant Startup\n", timestring(), (int)pid);
-    printf("[%s] %d: %s connect to me\n", timestring(), (int)pid, argv[2]);
 
+    /* extract connection file descreptor */
     int connfd;
     sscanf(argv[1], "%d", &connfd);
+
+    /* start up log */
+    printf("[%s] %d: %s connect to me\n", timestring(), (int)pid, argv[2]);
+
+    /* serve */
     echo(connfd);
+
+    /* service end, close connection */
     Close(connfd);
 
+    /* end log */
     printf("[%s] %d: Servant Exit\n", timestring(), (int)pid);
 
     return 0;
