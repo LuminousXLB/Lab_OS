@@ -38,15 +38,15 @@ int main(int argc, char** argv)
             /* Executable file path */
             char executable[] = "./servant";
 
+            /* Prepare connect socket file descriptor */
+            char fd_info[6];
+            sprintf(fd_info, "%d", connfd);
+
             /* Extract client socket address */
             struct sockaddr_in* sin = (struct sockaddr_in*)&clientaddr;
             char* ip = inet_ntoa(sin->sin_addr);
             char addr_info[24];
             sprintf(addr_info, "%s:%u", ip, sin->sin_port);
-
-            /* Prepare connect socket file descriptor */
-            char fd_info[6];
-            sprintf(fd_info, "%d", connfd);
 
             /* Build args array */
             char* args[4] = { executable, fd_info, addr_info, NULL };
