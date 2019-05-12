@@ -167,7 +167,8 @@ int open_listenfd(char* port)
             break;
         }
 
-        if (close(listenfd) < 0) { /* Bind failed, try the next */
+        if (close(listenfd) < 0) {
+            /* Bind failed, try the next */
             fprintf(stderr, "open_listenfd close failed: %s\n", strerror(errno));
             return -1;
         }
