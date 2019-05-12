@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if test $# -eq 1
+then
+	grep --recursive -Hn --include=*.c --include=*.h --regexp=$1 $PWD
+elif test $# -eq 2
+then
+	grep --recursive -Hn --include=*.c --include=*.h --regexp=$2 $1
+else
+	echo "Usage: $0 PATH_ROOT PATTERN"
+	echo "Example: $0 /usr hello"
+fi
