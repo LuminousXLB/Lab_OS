@@ -4,6 +4,8 @@
 
 #include "lmem.h"
 
+map_ctl_st* status;
+
 /******* Wrapper for lmalloc and lfree ****************************************/
 
 #if 0
@@ -14,20 +16,20 @@ bool lfree(map_ctl_st *status, unsigned long size, char *addr);
 
 #endif
 
-map_ctl_st* status;
-
-unsigned long lmalloc_off(unsigned long size)
+/* return address offset */
+unsigned long lmalloc_offset(unsigned long size)
 {
     char* mem = lmalloc(status, size);
     return mem ? mem - status->core_map->m_addr : -1;
 }
 
+/* change offset to absolute address */
 bool lfree_offset(unsigned long size, unsigned long offset)
 {
     return lfree(status, size, status->core_map->m_addr + offset);
 }
 
-/******************************************************************************/
+/******* Utility Function *****************************************************/
 
 /* print the details of vacant partition table */
 void printCoreDump()
@@ -51,6 +53,8 @@ void printCoreDump()
     printf("%s\n", "==============================");
 }
 
+/******* Main Function ********************************************************/
+
 int main()
 {
     status = lmem_init(VIRTUL_MEMORY_SIZE);
@@ -71,7 +75,7 @@ int main()
         switch (*ptr) {
         case 'm':
             sscanf(ptr, "%s %li", cmd_buf, &size);
-            offset = lmalloc_off(size);
+            offset = lmalloc_offset(size);
             if (offset < core_map->m_size) {
                 printf("m\t%6lu\t%6lu\n", offset, size);
             }
