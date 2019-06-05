@@ -1,35 +1,27 @@
-//
-// Created by lx on 5/18/19.
-//
-
 #include "lmem.h"
 
 /******* DECLARATION : Memory Management Utility Function *********************/
 
 /* do the changes on blocks after a series of checks */
-void _lfree_commit(map_ctl_st *status, map_st *prior, map_st *next, char *addr, unsigned long size);
-
-/******************************************************************************/
-
+void _lfree_commit(map_ctl_st* status, map_st* prior, map_st* next, char* addr, unsigned long size);
 
 /******* DECLARATION : Linked List Manipulating Function **********************/
 
 /* generate a new block after head */
-map_st *generate_after(map_st *head);
+map_st* generate_after(map_st* head);
 
 /* remove the block head points to */
-void remove_at(map_st *head);
-
-/******************************************************************************/
+void remove_at(map_st* head);
 
 /******* IMPLEMENTATION : lmem_init *******************************************/
-map_ctl_st *lmem_init(unsigned long size) {
-    map_st *core_map = (map_st *) malloc(sizeof(map_st));
+map_ctl_st* lmem_init(unsigned long size)
+{
+    map_st* core_map = (map_st*)malloc(sizeof(map_st));
     core_map->m_size = size;
     core_map->m_addr = malloc(size);
     core_map->prior = NULL;
 
-    map_st *head = (map_st *) malloc(sizeof(map_st));
+    map_st* head = (map_st*)malloc(sizeof(map_st));
     head->m_size = size;
     head->m_addr = core_map->m_addr;
     head->prior = core_map;
@@ -37,7 +29,7 @@ map_ctl_st *lmem_init(unsigned long size) {
 
     core_map->next = head;
 
-    map_ctl_st *ptr = (map_ctl_st *) malloc(sizeof(map_ctl_st));
+    map_ctl_st* ptr = (map_ctl_st*)malloc(sizeof(map_ctl_st));
 
     ptr->core_map = core_map;
 #ifdef NEXT_FIT
@@ -46,11 +38,11 @@ map_ctl_st *lmem_init(unsigned long size) {
 
     return ptr;
 }
-/******************************************************************************/
 
 /******* IMPLEMENTATION : lmem_free *******************************************/
-void lmem_free(map_ctl_st *status) {
-    map_st *head = status->core_map;
+void lmem_free(map_ctl_st* status)
+{
+    map_st* head = status->core_map;
     free(head->m_addr);
 
     while (head->next) {
@@ -61,19 +53,19 @@ void lmem_free(map_ctl_st *status) {
     free(head);
     free(status);
 }
-/******************************************************************************/
 
 /******* IMPLEMENTATION : lmalloc *********************************************/
-char *lmalloc(map_ctl_st *status, unsigned long size) {
-    map_st *core_map = status->core_map;
+char* lmalloc(map_ctl_st* status, unsigned long size)
+{
+    map_st* core_map = status->core_map;
 
 #ifdef NEXT_FIT
     /* start from the block where placement happened just now */
-    map_st *last = status->last;
-    map_st *head = (last == core_map) ? NULL : last;
+    map_st* last = status->last;
+    map_st* head = (last == core_map) ? NULL : last;
 #else
     /* start from the first block */
-    map_st *head = core_map->next;
+    map_st* head = core_map->next;
 #endif
 
     /* walk until `head == NULL` which means alloc failed
@@ -104,7 +96,7 @@ char *lmalloc(map_ctl_st *status, unsigned long size) {
     assert(head->m_size >= size);
 
     /* allocate right here */
-    char *alloc = head->m_addr;
+    char* alloc = head->m_addr;
 
     if (head->m_size == size) {
         /* fit exactly, remove the block */
@@ -126,17 +118,16 @@ char *lmalloc(map_ctl_st *status, unsigned long size) {
         head->m_size -= size;
     }
 
-
     return alloc;
 }
-/******************************************************************************/
 
 /******* IMPLEMENTATION : lfree ***********************************************/
-bool lfree(map_ctl_st *status, unsigned long size, char *addr) {
+bool lfree(map_ctl_st* status, unsigned long size, char* addr)
+{
     /* get status parameters */
-    map_st *core_map = status->core_map;
+    map_st* core_map = status->core_map;
     const unsigned long _size = core_map->m_size;
-    const char *_addr = core_map->m_addr;
+    const char* _addr = core_map->m_addr;
 
     /* handlers */
     map_st *prior = NULL, *next = NULL;
@@ -171,7 +162,6 @@ bool lfree(map_ctl_st *status, unsigned long size, char *addr) {
         _lfree_commit(status, core_map, next, addr, size);
         return true;
     }
-
 
     /* walk until `next` touch the end
      *         or `prior->m_addr` < `addr` <= `next->m_addr` */
@@ -218,12 +208,11 @@ bool lfree(map_ctl_st *status, unsigned long size, char *addr) {
 
     return true;
 }
-/******************************************************************************/
-
 
 /******* IMPLEMENTATION : Memory Management Utility Function ******************/
 
-void _lfree_commit(map_ctl_st *status, map_st *prior, map_st *next, char *addr, unsigned long size) {
+void _lfree_commit(map_ctl_st* status, map_st* prior, map_st* next, char* addr, unsigned long size)
+{
 
     if (prior != status->core_map && addr == prior->m_addr + prior->m_size) {
         /* the 2nd criteria means the block to be freed is attached to the prior
@@ -258,19 +247,17 @@ void _lfree_commit(map_ctl_st *status, map_st *prior, map_st *next, char *addr, 
         next->m_size += size;
     } else {
         /* generate a new block */
-        map_st *new = generate_after(prior);
+        map_st* new = generate_after(prior);
         new->m_addr = addr;
         new->m_size = size;
     }
 }
 
-/******************************************************************************/
-
-
 /******* IMPLEMENTATION : Linked List Manipulating Function *******************/
 
-map_st *generate_after(map_st *head) {
-    map_st *node = malloc(sizeof(map_st));
+map_st* generate_after(map_st* head)
+{
+    map_st* node = malloc(sizeof(map_st));
 
     node->next = head->next;
     if (head->next) {
@@ -282,7 +269,8 @@ map_st *generate_after(map_st *head) {
     return node;
 }
 
-void remove_at(map_st *head) {
+void remove_at(map_st* head)
+{
     head->prior->next = head->next;
 
     if (head->next) {
@@ -291,5 +279,3 @@ void remove_at(map_st *head) {
 
     free(head);
 }
-
-/******************************************************************************/
