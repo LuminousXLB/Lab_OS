@@ -57,6 +57,11 @@ void lmem_free(map_ctl_st* status)
 /******* IMPLEMENTATION : lmalloc *********************************************/
 char* lmalloc(map_ctl_st* status, unsigned long size)
 {
+    if (size == 0) {
+        _error_("no memory allocated");
+        return NULL;
+    }
+
     map_st* core_map = status->core_map;
 
 #ifdef NEXT_FIT
@@ -124,6 +129,11 @@ char* lmalloc(map_ctl_st* status, unsigned long size)
 /******* IMPLEMENTATION : lfree ***********************************************/
 bool lfree(map_ctl_st* status, unsigned long size, char* addr)
 {
+    if (size == 0) {
+        _error_("no memory freed");
+        return false;
+    }
+
     /* get status parameters */
     map_st* core_map = status->core_map;
     const unsigned long _size = core_map->m_size;

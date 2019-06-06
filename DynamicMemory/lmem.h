@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NEXT_FIT
+//#define NEXT_FIT
 
 /* memory map item */
 typedef struct map {
